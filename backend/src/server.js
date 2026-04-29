@@ -1,14 +1,19 @@
 //import express from  "express";
 
 import express from "express";
-import NoteRoutes from '../src/routes/NoteRoutes.js'
+import NoteRoutes from "../src/routes/NoteRoutes.js";
+import { connectDB } from "../src/config/db.js";
+import dotenv from "dotenv";
 const app = express();
 
-app.use("/api/notes",NoteRoutes)
+dotenv.config();
+console.log(process.env.MONGO_URI);
+const PORT = process.env.PORT || 5001;
+connectDB();
 
-app.listen(5001,() => {
-  console.log("server post is 5001");
-  console.log("moha souf");
+app.use("/api/notes", NoteRoutes);
 
-
+app.listen(PORT, () => {
+  console.log("server running on port :", 5001);
+  
 });
