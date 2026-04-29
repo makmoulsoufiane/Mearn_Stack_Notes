@@ -28,11 +28,7 @@ export async function createNotes(req, res) {
 /* UPDATE NOTE */
 export async function updateNotes(req, res) {
   try {
-    const updated = await Note.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const updated = await Note.findByIdAndUpdate(req.params.id,req.body,{ new: true });
 
     if (!updated) {
       return res.status(404).json({ message: "Note not found" });
