@@ -11,9 +11,11 @@ console.log(process.env.MONGO_URI);
 const PORT = process.env.PORT || 5001;
 connectDB();
 
+
+
 app.use("/api/notes", NoteRoutes);
 
 app.listen(PORT, () => {
   console.log("server running on port :", 5001);
-  
+
 });
