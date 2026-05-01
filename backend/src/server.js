@@ -17,7 +17,13 @@ app.use(express.json());
 app.use(rateLimiter)
 app.use("/api/notes", NoteRoutes);
 
-app.listen(PORT, () => {
-  console.log("server running on port :", PORT);
-
-});
+connectDB()
+  .then(() => {
+    console.log("MongoDB connected");
+    app.listen(PORT, () => {
+      console.log("server running on port :", PORT);
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection failed:", err);
+  });
