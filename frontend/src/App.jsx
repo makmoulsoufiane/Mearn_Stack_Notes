@@ -3,14 +3,14 @@ import { Routes, Route } from "react-router";
 import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
 import NoteDetailPage from "./pages/NoteDetailPage";
-import toast from "react-hot-toast";
+
 
 const App = () => {
   return (
     <div>
-      <button onClick={() => toast.success("This didn't work. toasted!")}>
-        Click button
-      </button>
+      <button className="btn btn-primary">
+  DaisyUI Test
+</button>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/create" element={<CreatePage />} />
