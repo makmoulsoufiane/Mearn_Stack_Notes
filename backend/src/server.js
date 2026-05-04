@@ -1,20 +1,30 @@
 //import express from  "express";
-
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+
 import NoteRoutes from "../src/routes/NoteRoutes.js";
 import { connectDB } from "../src/config/db.js";
-import dotenv from "dotenv";
 import rateLimiter from "./middleware/rateLimiter.js";
-const app = express();
 
 dotenv.config();
+
+const app = express();
+
 console.log(process.env.MONGO_URI);
 const PORT = process.env.PORT || 5001;
-connectDB();
 
 //middleware
 app.use(express.json());
-app.use(rateLimiter)
+app.use(rateLimiter);
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
+
+connectDB();
+
 app.use("/api/notes", NoteRoutes);
 
 connectDB()
