@@ -4,20 +4,16 @@ import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
 import NoteDetailPage from "./pages/NoteDetailPage";
 
-
 const App = () => {
   return (
-    <div>
-      <button className="btn btn-primary">
-  DaisyUI Test
-</button>
+    <div data-theme="luxury">
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/create" element={<CreatePage />} />
         <Route path="/note/:id" element={<NoteDetailPage />} />
       </Routes>
-      </div>
-    );
+    </div>
+  );
 };
 
 export default App;
