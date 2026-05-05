@@ -9,6 +9,8 @@ const HomePage = () => {
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
+  console.log(notes);
+  
 
   useEffect(() => {
     const fetchNotes = async () => {
