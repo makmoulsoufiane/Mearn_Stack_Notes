@@ -3,6 +3,7 @@ import axios from "axios";
 
 import NavBar from "../components/NavBar";
 import RateLimited from "../components/RateLimited";
+import NoteCard from "../components/NoteCard";
 
 const HomePage = () => {
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -17,14 +18,12 @@ const HomePage = () => {
         const res = await axios.get("http://localhost:5001/api/notes");
 
         setNotes(res.data);
-
       } catch (error) {
         console.log("error fetching notes");
 
         if (error.response?.status === 429) {
           setIsRateLimited(true);
         }
-
       } finally {
         setLoading(false);
       }
@@ -40,20 +39,16 @@ const HomePage = () => {
       {isRateLimited && <RateLimited />}
 
       {/* LOADING */}
-      {loading && (
-        <div className="flex justify-center items-center p-6">
-          <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
+
 
       {/* NOTES */}
-      {!loading &&
-        notes.map((note) => (
-          <div key={note._id} className="p-3 border-b">
-            <h3 className="font-bold">{note.title}</h3>
-            <p>{note.content}</p>
-          </div>
-        ))}
+      {!loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {notes.map((note) => (
+            <NoteCard key={note._id} note={note}  />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
