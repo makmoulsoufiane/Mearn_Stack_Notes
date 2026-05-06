@@ -1,39 +1,37 @@
-import React from 'react';
+import React, { useState } from "react";
 import axios from "axios";
+import NavBar from "../components/NavBar"; // تأكد من path
+import { Link } from "react-router";
 const CreatePage = () => {
-  const [newNote, setnewNote] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
-  useEffect(() => {
-    const fetchnewNote = async () => {
-      try {
-        setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        const res = await axios.post("http://localhost:5001/api/notes");
+    try {
+      const response = await axios.post("http://localhost:5001/api/notes", {
+        title,
+        content,
+      });
 
-        setnewNote(res.data);
+      console.log("Data:", response.data);
 
-      } catch (error) {
-        console.log("error fetching notes");
-
-        if (error.response?.status === 429) {
-          setIsRateLimited(true);
-        }
-
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchnewNote();
-  }, []);
-
+      // reset form
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen">
       <NavBar />
-
-      {isRateLimited && <RateLimited />}
 
       {/* LOADING */}
       {loading && (
@@ -42,18 +40,38 @@ const CreatePage = () => {
         </div>
       )}
 
-      {/*NOTES */}
-      {!loading &&
-        notes.map((note) => (
-          <div key={note._id} className="p-3 border-b">
-            <h3 className="font-bold">{note.title}</h3>
-            <p>{note.content}</p>
-          </div>
-        ))}
+      {/* FORM */}
+      {!loading && (
+        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+          <Link to={"/"}>back to home page</Link>
+          <input
+            type="text"
+            placeholder="Title"
+            className="border p-2 rounded"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            disabled={loading}
+          />
+
+          <textarea
+            placeholder="Content"
+            className="border p-2 rounded"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            disabled={loading}
+          />
+
+          <button
+            type="submit"
+            className="bg-blue-500 text-white p-2 rounded"
+            disabled={loading}
+          >
+            {loading ? "Creating..." : "Create Note"}
+          </button>
+        </form>
+      )}
     </div>
   );
+};
 
-
-}
-
-export default CreatePage
+export default CreatePage;

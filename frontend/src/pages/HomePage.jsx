@@ -10,7 +10,7 @@ const HomePage = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   console.log(notes);
-  
+
 
   useEffect(() => {
     const fetchNotes = async () => {
