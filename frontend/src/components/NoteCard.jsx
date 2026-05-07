@@ -2,9 +2,39 @@ import { PresentationIcon, Trash2Icon } from "lucide-react";
 import React from "react";
 import { Link } from "react-router";
 import { formatDate } from "../utils/formatDate";
+import toast from "react-hot-toast";
+import api from "../api/axios";
+import axios from "axios";
 
-const NoteCard = ({ note }) => {
+const NoteCard = ({ note,setNotes }) => {
   console.log(note);
+  console.log(setNotes);
+
+
+
+const handleDelete = async (e, id) => {
+  console.log("🟡 Button clicked");
+  console.log("ID:", id);
+
+  e.preventDefault();
+
+  const confirmDelete = window.confirm("Are you sure?");
+  console.log("Confirm:", confirmDelete);
+
+  if (!confirmDelete) return;
+
+  console.log("🔵 Sending DELETE request...");
+
+  try {
+    await api.delete(`/notes/${id}`);
+    setNotes((prev) => prev.filter((note) => note._id !== id));// get rid of the delete one
+    toast.success("Note deleted successfully ✅");
+    console.log("🟢 Deleted successfully");
+  } catch (error) {
+    console.log("🔴 Delete error:", error);
+    console.log("🔴 Error response:", error.response);
+  }
+};
 
   return (
     <Link
@@ -19,7 +49,7 @@ const NoteCard = ({ note }) => {
           <span className="text-sm text-base-content/60">{formatDate(note.createdAt)}</span>
           <div className="flex items-center gap-1">
             <PresentationIcon className="size-4" />
-            <button className="btn btn-ghost btn-xs text-error">
+            <button className="btn btn-ghost btn-xs text-error" onClick={(e)=> handleDelete(e,note._id)}>
               <Trash2Icon className="size-4" />
             </button>
           </div>
