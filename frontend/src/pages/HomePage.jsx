@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import api from "../api/axios";
 import NavBar from "../components/NavBar";
 import RateLimited from "../components/RateLimited";
 import NoteCard from "../components/NoteCard";
@@ -17,7 +17,7 @@ const HomePage = () => {
       try {
         setLoading(true);
 
-        const res = await axios.get("http://localhost:5001/api/notes");
+        const res = await api.get("/notes");
 
         setNotes(res.data);
       } catch (error) {
@@ -53,7 +53,7 @@ const HomePage = () => {
       </div>
     )}
   </div>
-);  
+);
 };
 
 export default HomePage;
