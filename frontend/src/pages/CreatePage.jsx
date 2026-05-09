@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import api from "../api/axios"
 import NavBar from "../components/NavBar"; // تأكد من path
 import { Link, useNavigate } from "react-router";
+
 import toast from "react-hot-toast";
 const CreatePage = () => {
   const [loading, setLoading] = useState(false);
