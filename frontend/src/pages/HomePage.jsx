@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import api from "../api/axios";
+import { Link } from "react-router";
+import { PlusIcon } from "lucide-react"
 import NavBar from "../components/NavBar";
 import RateLimited from "../components/RateLimited";
 import NoteCard from "../components/NoteCard";
@@ -56,6 +58,16 @@ const HomePage = () => {
             You don’t have any notes right now. Start by creating your first
             note 🚀
           </p>
+          <div className="p-4">
+             <Link
+            to="/create"
+            className="btn btn-success flex items-center gap-2"
+          >
+            <PlusIcon className="w-5 h-5" />
+            <span>Create Your First Note</span>
+          </Link>
+          </div>
+
         </div>
       )}
 
