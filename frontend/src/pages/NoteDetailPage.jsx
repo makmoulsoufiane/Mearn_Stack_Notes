@@ -11,10 +11,26 @@ const NoteDetailPage = () => {
 
   const navigate = useNavigate();
 
+  const handledelete = async () => {
+    const confirmDelete = window.confirm("Are you sure?");
+    console.log("Confirm:", confirmDelete);
+    if (!confirmDelete) return;
 
+    try {
+      await api.delete(`/notes/${id}`)
+      toast.success("Note update successfully ✅");
+      navigate("/");
+      
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setLoading(false)
+    }
+
+  }
 
   const handleSave = async (e) => {
-    
+
 
     setLoading(true);
     try {
@@ -68,7 +84,7 @@ const NoteDetailPage = () => {
             ← Back to Notes
           </button>
 
-          <button className="btn btn-error btn-sm">Delete</button>
+          <button className="btn btn-error btn-sm" onClick={handledelete}>Delete</button>
         </div>
 
         {/* Card */}

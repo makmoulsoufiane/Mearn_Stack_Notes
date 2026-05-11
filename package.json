@@ -1,8 +1,19 @@
-{
+ {
   "dependencies": {
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.9",
     "daisyui": "^5.5.19",
     "dotenv": "^16.5.0"
-  }
+  },
+  "name": "note-mern-full-stack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "build": "npm install --prefix backend && npm install -- frontend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
