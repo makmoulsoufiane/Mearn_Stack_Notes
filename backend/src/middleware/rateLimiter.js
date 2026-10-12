@@ -1,6 +1,8 @@
 import { ratelimit } from "../config/upstash.js"
 
   export const rateLimiter = async (req, res, next) => {
+    if (!ratelimit) return next();
+
     try {
       //const ip = req.ip; // أو userId إلا عندك auth
 
