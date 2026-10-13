@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../api/axios";
+import { notesPath } from "../utils/notesPath";
 import NavBar from "../components/NavBar";
 import { Link, useNavigate } from "react-router";
 
@@ -29,7 +30,7 @@ const CreatePage = () => {
       });
 
       toast.success("Note created successfully ✅");
-      navigate("/notes");
+      navigate(notesPath());
       console.log("Data:", response.data);
 
       // reset form
@@ -57,7 +58,7 @@ const CreatePage = () => {
       {!loading && (
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
-          <Link to="/notes">back to home page</Link>
+          <Link to={notesPath()}>back to home page</Link>
           <input
             type="text"
             placeholder="Title"

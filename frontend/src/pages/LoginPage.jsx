@@ -12,6 +12,7 @@ import {
 
 import Input from "../components/Input";
 import api from "../api/axios";
+import { notesPath } from "../utils/notesPath";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -39,9 +40,9 @@ const LoginPage = () => {
     try {
       const res = await api.post("/auth/login", formData);
 
-      localStorage.setItem("isConnected", "true");
+      localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      navigate("/notes");
+      navigate(notesPath(), { replace: true });
     } catch (error) {
       setError(error.response?.data?.message || "Login failed. Try again.");
     } finally {

@@ -1,45 +1,47 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import api from "../api/axios";
 import { Link } from "react-router";
 import { PlusIcon } from "lucide-react"
 import NavBar from "../components/NavBar";
-import RateLimited from "../components/RateLimited";
 import NoteCard from "../components/NoteCard";
 
 const HomePage = () => {
-  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
   const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(false);
-  console.log(notes);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNotes = async () => {
       try {
         setLoading(true);
+        setError("");
 
         const res = await api.get("/notes");
 
         setNotes(res.data);
       } catch (error) {
-        console.log("error fetching notes");
-
-        if (error.response?.status === 429) {
-          setIsRateLimited(true);
-        }
+        setError(error.response?.data?.message || "Could not load your notes. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchNotes();
-  }, []);
+  }, [retry]);
 
   return (
     <div className="min-h-screen">
       <NavBar />
 
-      {isRateLimited && <RateLimited />}
+      {error && (
+        <div role="alert" className="mx-auto max-w-6xl p-6">
+          <p>{error}</p>
+          <button className="btn btn-outline mt-4" onClick={() => setRetry((value) => value + 1)} disabled={loading}>
+            Try Again
+          </button>
+        </div>
+      )}
 
       {loading && (
         <div className="flex flex-col items-center justify-center py-10 gap-3">
@@ -48,7 +50,7 @@ const HomePage = () => {
         </div>
       )}
 
-      {notes.length === 0 && (
+      {!loading && !error && notes.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20">
           <h2 className="text-4xl font-extrabold text-green-700 mb-4">
             No Notes Yet

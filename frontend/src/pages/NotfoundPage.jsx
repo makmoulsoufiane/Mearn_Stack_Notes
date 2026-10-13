@@ -1,10 +1,11 @@
 import React from "react";
 import { ArrowLeftIcon, HomeIcon, SearchXIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router";
+import { notesPath } from "../utils/notesPath";
 
 const NotfoundPage = () => {
   const navigate = useNavigate();
-  const isConnected = localStorage.getItem("isConnected") === "true";
+  const isConnected = Boolean(localStorage.getItem("token"));
 
   return (
     <main className="min-h-screen px-6 py-10 flex items-center justify-center">
@@ -36,7 +37,7 @@ const NotfoundPage = () => {
           </button>
 
           <Link
-            to={isConnected ? "/notes" : "/login"}
+            to={isConnected ? notesPath() : "/login"}
             className="btn btn-primary"
           >
             <HomeIcon className="h-5 w-5" />

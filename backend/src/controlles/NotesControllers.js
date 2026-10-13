@@ -1,9 +1,18 @@
 import Note from "../models/Note.js";
 
+const noteFilter = (req) => ({ _id: req.params.id, user: req.user._id });
+
+function noteFields(body) {
+  const { title, content } = body ?? {};
+  if (typeof title !== "string" || typeof content !== "string") return null;
+  if (!title.trim() || !content.trim()) return null;
+  return { title: title.trim(), content: content.trim() };
+}
+
 /* GET ALL NOTES */
 export async function getAllNotes(req, res) {
   try {
-    const notes = await Note.find().sort({ createdAt: -1 });
+    const notes = await Note.find({ user: req.user._id }).sort({ createdAt: -1 });
 
     res.status(200).json(notes);
 
@@ -17,9 +26,11 @@ export async function getAllNotes(req, res) {
 /* CREATE NOTE */
 export async function createNotes(req, res) {
   try {
-    const { title, content } = req.body;
-
-    const newNote = await Note.create({title,content,});
+    const fields = noteFields(req.body);
+    if (!fields) {
+      return res.status(400).json({ message: "Title and content are required." });
+    }
+    const newNote = await Note.create({ ...fields, user: req.user._id });
 
     res.status(201).json(newNote);
   } catch (error) {
@@ -31,7 +42,7 @@ export async function createNotes(req, res) {
 
 export async function getNoteById(req, res) {
   try {
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findOne(noteFilter(req));
     if (!note) return res.status(404).json({ message: "Note not found!" });
     res.json(note);
   } catch (error) {
@@ -42,7 +53,14 @@ export async function getNoteById(req, res) {
 /* UPDATE NOTE */
 export async function updateNotes(req, res) {
   try {
-    const updated = await Note.findByIdAndUpdate(req.params.id,req.body,{ new: true });
+    const fields = noteFields(req.body);
+    if (!fields) {
+      return res.status(400).json({ message: "Title and content are required." });
+    }
+    const updated = await Note.findOneAndUpdate(noteFilter(req), fields, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updated) {
       return res.status(404).json({ message: "Note not found" });
@@ -58,7 +76,7 @@ export async function updateNotes(req, res) {
 /* DELETE NOTE */
 export async function deleteNotes(req, res) {
   try {
-    const deleted = await Note.findByIdAndDelete(req.params.id);
+    const deleted = await Note.findOneAndDelete(noteFilter(req));
 
     if (!deleted) {
       return res.status(404).json({ message: "Note not found" });

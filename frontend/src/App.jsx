@@ -1,5 +1,6 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useParams } from "react-router";
+import { notesPath } from "./utils/notesPath";
 import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
 import NoteDetailPage from "./pages/NoteDetailPage";
@@ -8,10 +9,15 @@ import RegistrePage from "./pages/RegistrePage";
 import NotfoundPage from "./pages/NotfoundPage";
 
 const ProtectedRoute = ({ children }) => {
-  const isConnected = localStorage.getItem("isConnected") === "true";
+  const { userId } = useParams();
+  const isConnected = Boolean(localStorage.getItem("token"));
 
-  if (!isConnected) {
+  if (!isConnected || notesPath() === "/login") {
     return <Navigate to="/login" replace />;
+  }
+
+  if (userId && `/notes/${encodeURIComponent(userId)}` !== notesPath()) {
+    return <Navigate to={notesPath()} replace />;
   }
 
   return children;
@@ -26,6 +32,10 @@ const App = () => {
         <Route path="/" element={<LoginPage />} />
         <Route
           path="/notes"
+          element={<ProtectedRoute><Navigate to={notesPath()} replace /></ProtectedRoute>}
+        />
+        <Route
+          path="/notes/:userId"
           element={
             <ProtectedRoute>
               <HomePage />

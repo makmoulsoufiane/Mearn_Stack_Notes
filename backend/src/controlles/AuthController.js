@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import { createSession } from "../services/session.js";
 import { comparePassword, hashPassword } from "../utils/password.js";
 
 const createUserResponse = (user) => ({
@@ -65,6 +66,7 @@ export async function loginUser(req, res) {
 
     res.status(200).json({
       message: "Logged in successfully.",
+      token: await createSession(user._id),
       user: createUserResponse(user),
     });
   } catch (error) {

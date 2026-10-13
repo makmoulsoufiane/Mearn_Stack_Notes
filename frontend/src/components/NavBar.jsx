@@ -2,11 +2,21 @@ import React from "react";
 import { Link, useNavigate } from "react-router";
 import { LogOutIcon, PlusIcon } from "lucide-react";
 import toast from "react-hot-toast";
+import api from "../api/axios";
 
 const NavBar = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (error) {
+      if (error.response?.status !== 401) {
+        toast.error("Could not log out. Please try again.");
+        return;
+      }
+    }
+    localStorage.removeItem("token");
     localStorage.removeItem("isConnected");
     localStorage.removeItem("user");
     toast.success("Logged out successfully");

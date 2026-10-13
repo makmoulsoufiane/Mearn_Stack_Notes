@@ -2,72 +2,87 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import api from "../api/axios";
+import { notesPath } from "../utils/notesPath";
 
 const NoteDetailPage = () => {
   const { id } = useParams();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
 
   const navigate = useNavigate();
 
   const handledelete = async () => {
     const confirmDelete = window.confirm("Are you sure?");
-    console.log("Confirm:", confirmDelete);
     if (!confirmDelete) return;
 
+    setSaving(true);
     try {
       await api.delete(`/notes/${id}`);
-      toast.success("Note update successfully ✅");
-      navigate("/notes");
+      toast.success("Note deleted successfully");
+      navigate(notesPath());
     } catch (error) {
-      console.log(error);
+      toast.error(error.response?.data?.message || "Could not delete this note.");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  const handleSave = async (e) => {
+  const handleSave = async () => {
 
 
-    setLoading(true);
+    setSaving(true);
     try {
-      const response = await api.put(`/notes/${id}`, note);
+      await api.put(`/notes/${id}`, { title: note.title, content: note.content });
 
       toast.success("Note update successfully ✅");
-      navigate("/notes");
-      console.log("Data:", response.data);
+      navigate(notesPath());
 
       // reset form
 
     } catch (error) {
-      console.error("Error:", error);
+      toast.error(error.response?.data?.message || "Could not save this note.");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   useEffect(() => {
+    let active = true;
     const fetchData = async () => {
+      setLoading(true);
+      setError("");
+      setNote(null);
       try {
         const res = await api.get(`/notes/${id}`);
-        setNote(res.data);
+        if (active) setNote(res.data);
       } catch (error) {
-        console.log(error);
+        if (active) setError(error.response?.data?.message || "Could not load this note. Please try again.");
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     fetchData();
-  }, [id]);
+    return () => { active = false; };
+  }, [id, retry]);
 
   if (loading) {
     return <h1>Loading...</h1>;
   }
 
   if (!note) {
-    return null;
+    return (
+      <div className="mx-auto max-w-2xl p-6">
+        <p role="alert">{error || "Note not found."}</p>
+        <div className="mt-4 flex gap-3">
+          <button className="btn btn-ghost" onClick={() => navigate(notesPath())}>Back to Notes</button>
+          <button className="btn btn-outline" onClick={() => setRetry((value) => value + 1)}>Try Again</button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -76,13 +91,13 @@ const NoteDetailPage = () => {
         {/* Top bar */}
         <div className="flex justify-between items-center mb-4">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => navigate(notesPath())}
             className="btn btn-ghost btn-sm"
           >
             ← Back to Notes
           </button>
 
-          <button className="btn btn-error btn-sm" onClick={handledelete}>Delete</button>
+          <button className="btn btn-error btn-sm" onClick={handledelete} disabled={saving}>Delete</button>
         </div>
 
         {/* Card */}
@@ -113,8 +128,8 @@ const NoteDetailPage = () => {
 
             {/* Save button */}
             <div className="flex justify-end mt-6">
-              <button className="btn btn-primary btn-sm" onClick={handleSave}>
-                Save Changes
+              <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
