@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import axios from "axios";
 import toast from "react-hot-toast";
 import api from "../api/axios";
+
 const NoteDetailPage = () => {
   const { id } = useParams();
   const [note, setNote] = useState(null);
@@ -17,17 +17,15 @@ const NoteDetailPage = () => {
     if (!confirmDelete) return;
 
     try {
-      await api.delete(`/notes/${id}`)
+      await api.delete(`/notes/${id}`);
       toast.success("Note update successfully ✅");
-      navigate("/");
-      
+      navigate("/notes");
     } catch (error) {
       console.log(error);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
-
-  }
+  };
 
   const handleSave = async (e) => {
 
@@ -37,7 +35,7 @@ const NoteDetailPage = () => {
       const response = await api.put(`/notes/${id}`, note);
 
       toast.success("Note update successfully ✅");
-      navigate("/");
+      navigate("/notes");
       console.log("Data:", response.data);
 
       // reset form

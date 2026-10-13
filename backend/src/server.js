@@ -5,7 +5,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import NoteRoutes from "../src/routes/NoteRoutes.js";
+import AuthRoutes from "../src/routes/AuthRoutes.js";
 import { connectDB } from "../src/config/db.js";
+import { seedTestUser } from "../src/config/seedUser.js";
 import rateLimiter from "./middleware/rateLimiter.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +31,7 @@ app.use(
 );
 
 app.use("/api/notes", NoteRoutes);
+app.use("/api/auth", AuthRoutes);
 
 if (process.env.NODE_ENV === "production") {
   const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
@@ -40,7 +43,8 @@ if (process.env.NODE_ENV === "production") {
 }
 
 connectDB()
-  .then(() => {
+  .then(async () => {
+    await seedTestUser();
     console.log("MongoDB connected");
     app.listen(PORT, () => {
       console.log("server running on port :", PORT);

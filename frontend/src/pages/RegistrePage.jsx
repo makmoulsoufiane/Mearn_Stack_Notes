@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { LockKeyhole, Mail, UserRound, UserPlus } from "lucide-react";
 
 import Input from "../components/Input";
+import api from "../api/axios";
 
 const RegistrePage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,6 +14,7 @@ const RegistrePage = () => {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const passwordMismatch =
     formData.confirmPassword && formData.password !== formData.confirmPassword;
@@ -25,16 +28,27 @@ const RegistrePage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (passwordMismatch) return;
 
     setLoading(true);
+    setError("");
 
-    setTimeout(() => {
+    try {
+      await api.post("/auth/register", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      navigate("/login");
+    } catch (error) {
+      setError(error.response?.data?.message || "Register failed. Try again.");
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (
@@ -53,6 +67,12 @@ const RegistrePage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="alert alert-error text-sm">
+              <span>{error}</span>
+            </div>
+          )}
+
           <Input
             label="Full name"
             name="name"

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import Input from "../components/Input";
+import api from "../api/axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const LoginPage = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,15 +31,22 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    setTimeout(() => {
+    try {
+      const res = await api.post("/auth/login", formData);
+
       localStorage.setItem("isConnected", "true");
-      setLoading(false);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
       navigate("/notes");
-    }, 600);
+    } catch (error) {
+      setError(error.response?.data?.message || "Login failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,6 +66,12 @@ const LoginPage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="alert alert-error text-sm">
+              <span>{error}</span>
+            </div>
+          )}
+
           <Input
             label="Email"
             name="email"

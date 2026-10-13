@@ -1,35 +1,35 @@
 import React, { useState } from "react";
-import axios from "axios";
-import api from "../api/axios"
-import NavBar from "../components/NavBar"; // تأكد من path
+import api from "../api/axios";
+import NavBar from "../components/NavBar";
 import { Link, useNavigate } from "react-router";
 
 import toast from "react-hot-toast";
+
 const CreatePage = () => {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
     if (!title || !content) {
-  toast.error("Title and content are required ❌");
-  return;
-}
-   setLoading(true);
+      toast.error("Title and content are required ❌");
+      return;
+    }
+
+    setLoading(true);
 
     try {
-        const response = await api.post("/notes", {
+      const response = await api.post("/notes", {
         title,
         content,
       });
+
       toast.success("Note created successfully ✅");
-      navigate("/");
+      navigate("/notes");
       console.log("Data:", response.data);
 
       // reset form
@@ -57,7 +57,7 @@ const CreatePage = () => {
       {!loading && (
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
-          <Link to={"/"}>back to home page</Link>
+          <Link to="/notes">back to home page</Link>
           <input
             type="text"
             placeholder="Title"

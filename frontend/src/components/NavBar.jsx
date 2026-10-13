@@ -1,7 +1,18 @@
 import React from "react";
-import { Link } from "react-router";
-import { PlusIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { LogOutIcon, PlusIcon } from "lucide-react";
+import toast from "react-hot-toast";
+
 const NavBar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("isConnected");
+    localStorage.removeItem("user");
+    toast.success("Logged out successfully");
+    navigate("/login", { replace: true });
+  };
+
   return (
     <header className="bg-base-300 border-b border-base-content/10">
       <div className="mx-auto max-w-6xl p-4">
@@ -20,6 +31,16 @@ const NavBar = () => {
               <PlusIcon className="w-5 h-5" />
               <span>New Note</span>
             </Link>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="btn btn-ghost btn-square"
+              aria-label="Logout"
+              title="Logout"
+            >
+              <LogOutIcon className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
