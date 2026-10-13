@@ -1,25 +1,29 @@
-import { ratelimit } from "../config/upstash.js"
+const WINDOW_MS = 20 * 1000;
+const MAX_REQUESTS = 10;
+const requests = new Map();
 
-  export const rateLimiter = async (req, res, next) => {
-    if (!ratelimit) return next();
+export const rateLimiter = (req, res, next) => {
+  const identifier = req.ip || "anonymous";
+  const now = Date.now();
+  const current = requests.get(identifier);
 
-    try {
-      //const ip = req.ip; // أو userId إلا عندك auth
+  if (!current || current.resetAt <= now) {
+    requests.set(identifier, {
+      count: 1,
+      resetAt: now + WINDOW_MS,
+    });
+    return next();
+  }
 
-      const {success} = await ratelimit.limit("my_limit_key");
+  current.count += 1;
 
-      if (!success) {
-        return res.status(429).json({
-          message: "Too many requests 🚫",
-        });
-      }
+  if (current.count > MAX_REQUESTS) {
+    return res.status(429).json({
+      message: "Too many requests, please try again later.",
+    });
+  }
 
-      next();
-    } catch (error) {
-      return res.status(500).json({
-        message: "Rate limit error",
-      });
-    }
-  };
+  next();
+};
 
-export default  rateLimiter
+export default rateLimiter;

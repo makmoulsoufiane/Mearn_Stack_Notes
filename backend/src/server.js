@@ -1,22 +1,22 @@
-//import express from  "express";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+import { fileURLToPath } from "url";
 
 import NoteRoutes from "../src/routes/NoteRoutes.js";
 import { connectDB } from "../src/config/db.js";
 import rateLimiter from "./middleware/rateLimiter.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envPath = path.resolve(__dirname, "../.env");
+
+dotenv.config({ path: envPath });
 
 const app = express();
 
-
-
-console.log(process.env.MONGO_URI);
 const PORT = process.env.PORT || 5001;
-const __dirname = path.resolve();
 
 
 // middleware
@@ -31,9 +31,11 @@ app.use(
 app.use("/api/notes", NoteRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
+
+  app.use(express.static(frontendDistPath));
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(frontendDistPath, "index.html"));
   });
 }
 
@@ -45,5 +47,6 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error("Database connection failed:", err);
+    console.error("Database connection failed:", err.message);
+    process.exit(1);
   });
